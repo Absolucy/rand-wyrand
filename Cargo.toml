@@ -1,0 +1,10 @@
+[package]
+name = "rand-wyrand"
+version = "0.1.0"
+author = ["Lucy <lucy@absolucy.moe>"]
+repository = "https://github.com/Absolucy/rand-wyrand"
+license = "Apache-2.0 OR MIT"
+edition = "2021"
+
+[dependencies]
+rand_core = "0.6"
