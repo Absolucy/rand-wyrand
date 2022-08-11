@@ -1,10 +1,16 @@
 [package]
 name = "rand-wyrand"
+description = "The extremely fast WyRand PRNG for the rand ecosystem of crates."
 version = "0.1.0"
-author = ["Lucy <lucy@absolucy.moe>"]
+authors = ["Lucy <lucy@absolucy.moe>"]
 repository = "https://github.com/Absolucy/rand-wyrand"
 license = "Apache-2.0 OR MIT"
 edition = "2021"
+keywords = ["random", "rng", "wyrand", "wyhash"]
+categories = ["algorithms", "no-std"]
 
 [dependencies]
 rand_core = "0.6"
+
+[dev-dependencies]
+rand = "0.8"
