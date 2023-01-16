@@ -56,6 +56,8 @@
 #![forbid(unsafe_code)]
 #![deny(clippy::perf, clippy::style, clippy::correctness, clippy::complexity)]
 #![allow(clippy::tabs_in_doc_comments)]
+use core::fmt::Debug;
+
 use rand_core::{impls::fill_bytes_via_next, Error, RngCore, SeedableRng};
 
 /// An instance of the [WyRand](https://github.com/wangyi-fudan/wyhash) random number generator.
@@ -103,7 +105,7 @@ use rand_core::{impls::fill_bytes_via_next, Error, RngCore, SeedableRng};
 /// 	.collect();
 /// println!("Random string: {rand_string}")
 /// ```
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub struct WyRand {
 	seed: u64,
 }
@@ -149,5 +151,28 @@ impl SeedableRng for WyRand {
 	#[inline]
 	fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
 		Ok(Self::seed_from_u64(rng.next_u64()))
+	}
+}
+
+// Custom Debug implementation that does not expose the internal state
+impl Debug for WyRand {
+	fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+		f.debug_tuple("WyRand").finish()
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	extern crate alloc;
+
+	use alloc::format;
+
+	use super::*;
+
+	#[test]
+	fn no_leaking_debug() {
+		let rng = WyRand::from_seed(Default::default());
+
+		assert_eq!(format!("{:?}", rng), "WyRand");
 	}
 }
