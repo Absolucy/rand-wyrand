@@ -60,6 +60,9 @@ use core::fmt::Debug;
 
 use rand_core::{impls::fill_bytes_via_next, Error, RngCore, SeedableRng};
 
+#[cfg(feature = "serde1")]
+use serde::{Deserialize, Serialize};
+
 /// An instance of the [WyRand](https://github.com/wangyi-fudan/wyhash) random number generator.
 ///
 /// While not cryptographically secure, WyRand is solid enough to pass
@@ -106,6 +109,7 @@ use rand_core::{impls::fill_bytes_via_next, Error, RngCore, SeedableRng};
 /// println!("Random string: {rand_string}")
 /// ```
 #[derive(Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
 pub struct WyRand {
 	seed: u64,
 }
@@ -174,5 +178,23 @@ mod tests {
 		let rng = WyRand::from_seed(Default::default());
 
 		assert_eq!(format!("{:?}", rng), "WyRand");
+	}
+
+	#[cfg(feature = "serde1")]
+	#[test]
+	fn serde_tokens() {
+		use serde_test::{assert_tokens, Token};
+
+		let rng = WyRand::seed_from_u64(12345);
+
+		assert_tokens(&rng, &[
+			Token::Struct {
+				name: "WyRand",
+				len: 1,
+			},
+			Token::BorrowedStr("seed"),
+			Token::U64(12345),
+			Token::StructEnd,
+		]);
 	}
 }
