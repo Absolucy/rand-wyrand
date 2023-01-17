@@ -187,17 +187,14 @@ mod tests {
 
 		let rng = WyRand::seed_from_u64(12345);
 
-		assert_tokens(
-			&rng,
-			&[
-				Token::Struct {
-					name: "WyRand",
-					len: 1,
-				},
-				Token::BorrowedStr("seed"),
-				Token::U64(12345),
-				Token::StructEnd,
-			],
-		);
+		assert_tokens(&rng, &[
+			Token::Struct {
+				name: "WyRand",
+				len: 1,
+			},
+			Token::BorrowedStr("seed"),
+			Token::U64(12345),
+			Token::StructEnd,
+		]);
 	}
 }
