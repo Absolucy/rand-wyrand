@@ -1,7 +1,7 @@
 [package]
 name = "rand-wyrand"
 description = "The extremely fast WyRand PRNG for the rand ecosystem of crates."
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Lucy <lucy@absolucy.moe>"]
 repository = "https://github.com/Absolucy/rand-wyrand"
 license = "Apache-2.0 OR MIT"
