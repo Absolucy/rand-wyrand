@@ -16,7 +16,7 @@
 //! use rand::{Rng, SeedableRng};
 //! use rand_wyrand::WyRand;
 //!
-//! let mut wyrand = WyRand::from_entropy();
+//! let mut wyrand = WyRand::from_os_rng();
 //! let mut bytes = [0_u8; 64];
 //! wyrand.fill(&mut bytes);
 //! println!("Random bytes: {bytes:?}");
@@ -28,17 +28,17 @@
 //! use rand::{Rng, SeedableRng};
 //! use rand_wyrand::WyRand;
 //!
-//! let mut wyrand = WyRand::from_entropy();
+//! let mut wyrand = WyRand::from_os_rng();
 //! println!("Random number from 1 to 100: {}", wyrand.gen_range(1..=100));
 //! ```
 //!
 //! ### Generate random string
 //!
 //! ```rust
-//! use rand::{distributions::Alphanumeric, Rng, SeedableRng};
+//! use rand::{Rng, SeedableRng, distr::Alphanumeric};
 //! use rand_wyrand::WyRand;
 //!
-//! let mut wyrand = WyRand::from_entropy();
+//! let mut wyrand = WyRand::from_os_rng();
 //! let rand_string: String = wyrand
 //! 	.sample_iter(&Alphanumeric)
 //! 	.take(16)
@@ -54,11 +54,9 @@
 //! choice.
 #![no_std]
 #![forbid(unsafe_code)]
-#![deny(clippy::perf, clippy::style, clippy::correctness, clippy::complexity)]
-#![allow(clippy::tabs_in_doc_comments)]
 use core::fmt::Debug;
 
-use rand_core::{impls::fill_bytes_via_next, Error, RngCore, SeedableRng};
+use rand_core::{RngCore, SeedableRng, impls::fill_bytes_via_next};
 
 #[cfg(feature = "serde1")]
 use serde::{Deserialize, Serialize};
@@ -78,7 +76,7 @@ use serde::{Deserialize, Serialize};
 /// use rand::{Rng, SeedableRng};
 /// use rand_wyrand::WyRand;
 ///
-/// let mut wyrand = WyRand::from_entropy();
+/// let mut wyrand = WyRand::from_os_rng();
 /// let mut bytes = [0_u8; 64];
 /// wyrand.fill(&mut bytes);
 /// println!("Random bytes: {bytes:?}");
@@ -90,17 +88,17 @@ use serde::{Deserialize, Serialize};
 /// use rand::{Rng, SeedableRng};
 /// use rand_wyrand::WyRand;
 ///
-/// let mut wyrand = WyRand::from_entropy();
+/// let mut wyrand = WyRand::from_os_rng();
 /// println!("Random number from 1 to 100: {}", wyrand.gen_range(1..=100));
 /// ```
 ///
 /// ### Generate random string
 ///
 /// ```rust
-/// use rand::{distributions::Alphanumeric, Rng, SeedableRng};
+/// use rand::{Rng, SeedableRng, distr::Alphanumeric};
 /// use rand_wyrand::WyRand;
 ///
-/// let mut wyrand = WyRand::from_entropy();
+/// let mut wyrand = WyRand::from_os_rng();
 /// let rand_string: String = wyrand
 /// 	.sample_iter(&Alphanumeric)
 /// 	.take(16)
@@ -123,19 +121,13 @@ impl RngCore for WyRand {
 	#[inline]
 	fn next_u64(&mut self) -> u64 {
 		self.seed = self.seed.wrapping_add(0xa0761d6478bd642f);
-		let t: u128 = (self.seed as u128).wrapping_mul((self.seed ^ 0xe7037ed1a0b428db) as u128);
+		let t = (self.seed as u128).wrapping_mul((self.seed ^ 0xe7037ed1a0b428db) as u128);
 		(t.wrapping_shr(64) ^ t) as u64
 	}
 
 	#[inline]
 	fn fill_bytes(&mut self, dest: &mut [u8]) {
 		fill_bytes_via_next(self, dest)
-	}
-
-	#[inline]
-	fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), Error> {
-		self.fill_bytes(dest);
-		Ok(())
 	}
 }
 
@@ -153,8 +145,8 @@ impl SeedableRng for WyRand {
 	}
 
 	#[inline]
-	fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
-		Ok(Self::seed_from_u64(rng.next_u64()))
+	fn from_rng(rng: &mut impl RngCore) -> Self {
+		Self::seed_from_u64(rng.next_u64())
 	}
 }
 
@@ -183,7 +175,7 @@ mod tests {
 	#[cfg(feature = "serde1")]
 	#[test]
 	fn serde_tokens() {
-		use serde_test::{assert_tokens, Token};
+		use serde_test::{Token, assert_tokens};
 
 		let rng = WyRand::seed_from_u64(12345);
 

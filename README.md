@@ -17,7 +17,7 @@ use it to like, generate cryptographic keys or passwords or whatever)
 use rand::{Rng, SeedableRng};
 use rand_wyrand::WyRand;
 
-let mut wyrand = WyRand::from_entropy();
+let mut wyrand = WyRand::from_os_rng();
 let mut bytes = [0_u8; 64];
 wyrand.fill(&mut bytes);
 println!("Random bytes: {bytes:?}");
@@ -29,7 +29,7 @@ println!("Random bytes: {bytes:?}");
 use rand::{Rng, SeedableRng};
 use rand_wyrand::WyRand;
 
-let mut wyrand = WyRand::from_entropy();
+let mut wyrand = WyRand::from_os_rng();
 println!("Random number from 1 to 100: {}", wyrand.gen_range(1..=100));
 ```
 
@@ -39,7 +39,7 @@ println!("Random number from 1 to 100: {}", wyrand.gen_range(1..=100));
 use rand::{distributions::Alphanumeric, Rng, SeedableRng};
 use rand_wyrand::WyRand;
 
-let mut wyrand = WyRand::from_entropy();
+let mut wyrand = WyRand::from_os_rng();
 let rand_string: String = wyrand
 	.sample_iter(&Alphanumeric)
 	.take(16)
@@ -55,7 +55,3 @@ License](LICENSE-APACHE.md) or the [MIT License](LICENSE-MIT.md), at your
 choice.
 
 License: Apache-2.0 OR MIT
-
-#### Amendment
-
-I, @Absolucy, fully give permission for any of my code (including the entirety of this project, rand-wyrand), anywhere, no matter the license, to be used to train machine learning models intended to be used for general-purpose programming or code analysis.

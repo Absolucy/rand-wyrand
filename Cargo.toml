@@ -1,22 +1,40 @@
 [package]
 name = "rand-wyrand"
 description = "The extremely fast WyRand PRNG for the rand ecosystem of crates."
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Lucy <lucy@absolucy.moe>"]
 repository = "https://github.com/Absolucy/rand-wyrand"
 license = "Apache-2.0 OR MIT"
-edition = "2021"
+edition = "2024"
 keywords = ["random", "rng", "wyrand", "wyhash"]
 categories = ["algorithms", "no-std"]
 
 [dependencies]
-rand_core = "0.6"
+rand_core = "0.9"
 serde = { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
-rand = "0.8"
+rand = "0.9"
 serde_test = "1.0"
 
 [features]
 default = []
 serde1 = ["serde"]
+
+[lints.clippy]
+# presets
+complexity = "warn"
+correctness = "warn"
+perf = "warn"
+style = "warn"
+suspicious = "warn"
+# individual lints
+assigning_clones = "warn"
+create_dir = "warn"
+default_trait_access = "warn"
+inefficient_to_string = "warn"
+redundant_type_annotations = "warn"
+self_named_module_files = "warn"
+str_to_string = "warn"
+string_to_string = "warn"
+tabs_in_doc_comments = { level = "allow", priority = 1 }
